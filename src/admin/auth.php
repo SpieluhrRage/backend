@@ -1,20 +1,15 @@
 <?php
-// Запуск сессии для хранения авторизации
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 
-// Подключение к базе данных (PDO в db.php)
+require_once __DIR__ . '/../session.php';
 require_once __DIR__ . '/db.php';
 
-// Если пользователь уже авторизован — просто пропускаем дальше
 if (isset($_SESSION['user_id'])) {
     return;
 }
 
 $error = '';
 
-// Обработка отправки формы
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
@@ -22,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($username === '' || $password === '') {
         $error = 'Пожалуйста, заполните логин и пароль.';
     } else {
-        // Ищем пользователя в таблице users
+
         $stmt = $pdo->prepare('SELECT id, username, password FROM users WHERE username = :username');
         $stmt->execute(['username' => $username]);
         $user = $stmt->fetch();
@@ -31,13 +26,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stored = $user['password'];
             $ok = false;
 
-            // Если пароль похож на bcrypt-хеш — пробуем password_verify
             if (preg_match('/^\$2y\$\d+\$/', $stored)) {
                 if (password_verify($password, $stored)) {
                     $ok = true;
                 }
             } else {
-                // Иначе считаем, что пароль хранится в базе в открытом виде
+
                 if (hash_equals($stored, $password)) {
                     $ok = true;
                 }
