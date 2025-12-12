@@ -1,0 +1,13 @@
+{
+  "name": "timur/backend-pr6",
+  "description": "Учебный проект для практических работ по разработке серверных частей интернет-ресурсов",
+  "type": "project",
+  "require": {
+    "fakerphp/faker": "^1.23"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
+  }
+}
